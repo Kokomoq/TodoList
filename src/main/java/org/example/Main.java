@@ -1,18 +1,12 @@
 package org.example;
 
-import org.example.TodoList;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import static org.example.TodoList.readTasksFromFile;
-import static org.example.TodoList.saveTasksToFile;
+import static org.example.TodoList.*;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<String> tasks = readTasksFromFile();
-
+        ArrayList<String> tasks = readTasksFromDatabase();
         Scanner scanner = new Scanner(System.in);
         int choice;
 
@@ -38,7 +32,7 @@ public class Main {
                     }
                     break;
                 case 3:
-                    saveTasksToFile(tasks);
+                    saveTasksToDatabase(tasks);
                     System.out.println("Zadania zostały zapisane.");
                     break;
                 default:
