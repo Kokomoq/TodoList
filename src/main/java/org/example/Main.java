@@ -2,47 +2,49 @@ package org.example;
 
 import org.example.TodoList;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Main{
+import static org.example.TodoList.readTasksFromFile;
+import static org.example.TodoList.saveTasksToFile;
+
+public class Main {
     public static void main(String[] args) {
-        TodoList todoList = new TodoList();
+        ArrayList<String> tasks = readTasksFromFile();
+
         Scanner scanner = new Scanner(System.in);
-        int choice = 0;
+        int choice;
 
-        while (choice != 4) {
-            System.out.println("\nMenu:");
-            System.out.println("1. Wyświetl wszystkie pozycje z listy");
-            System.out.println("2. Dodaj nową pozycję");
-            System.out.println("3. Usuń pozycję z listy");
-            System.out.println("4. Wyjdź");
-
+        do {
+            System.out.println("Todo List");
+            System.out.println("1. Dodaj zadanie");
+            System.out.println("2. Wyświetl zadania");
+            System.out.println("3. Zapisz i wyjdź");
             System.out.print("Wybierz opcję: ");
             choice = scanner.nextInt();
 
             switch (choice) {
                 case 1:
-                    todoList.displayTasks();
+                    scanner.nextLine();
+                    System.out.print("Wprowadź zadanie: ");
+                    String task = scanner.nextLine();
+                    tasks.add(task);
                     break;
                 case 2:
-                    System.out.print("Podaj nową pozycję: ");
-                    scanner.nextLine(); // Clear the input buffer
-                    String newTask = scanner.nextLine();
-                    todoList.addTask(newTask);
+                    System.out.println("Lista zadań:");
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println((i + 1) + ". " + tasks.get(i));
+                    }
                     break;
                 case 3:
-                    System.out.print("Podaj numer pozycji do usunięcia: ");
-                    int indexToRemove = scanner.nextInt();
-                    todoList.removeTask(indexToRemove);
-                    break;
-                case 4:
-                    System.out.println("Dziękujemy. Do widzenia!");
+                    saveTasksToFile(tasks);
+                    System.out.println("Zadania zostały zapisane.");
                     break;
                 default:
-                    System.out.println("Nieprawidłowa opcja. Wybierz ponownie.");
+                    System.out.println("Nieprawidłowy wybór.");
             }
-        }
 
-        scanner.close();
+        } while (choice != 3);
     }
 }
