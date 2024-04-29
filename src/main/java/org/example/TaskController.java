@@ -1,6 +1,7 @@
 package org.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,9 @@ public class TaskController {
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
+
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public void deleteTask(@PathVariable(name = "id") Long id) {
         taskRepository.deleteById(id);
-        }
     }
+}
