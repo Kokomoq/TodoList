@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Todo List</title>
@@ -91,6 +91,7 @@
     </style>
 </head>
 <body>
+
 <div class="container">
     <!-- Nagłówek -->
     <h1>Todo List</h1>
@@ -101,7 +102,9 @@
     <!-- Lista zadań -->
     <ul id="taskList"></ul>
 </div>
-
+<a th:href="@{/login}">
+    <button>Login</button>
+</a>
 <!-- Skrypt JavaScript -->
 <script>
         function fetchTasks() {

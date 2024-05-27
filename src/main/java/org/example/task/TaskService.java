@@ -1,11 +1,9 @@
-package org.example;
+package org.example.task;
 
-import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class TodoList {
+public class TaskService {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/todo_db";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "admin";
