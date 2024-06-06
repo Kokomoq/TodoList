@@ -1,8 +1,10 @@
 package org.example.web;
 
 import org.example.task.Task;
-import org.example.task.TaskRepository;
+import org.example.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,23 +13,35 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 public class TaskController {
 
+    private final TaskService taskService;
+
     @Autowired
-    private TaskRepository taskRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
+    // Create a new task
     @PostMapping
-    public void addTask(@RequestBody String description) {
-        Task task = new Task();
-        task.setDescription(description);
-        taskRepository.save(task);
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task createdTask = taskService.saveTask(task);
+        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
+    // Get all tasks
     @GetMapping
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public ResponseEntity<List<Task>> getAllTasks() {
+        List<Task> tasks = taskService.getAllTasks();
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable(name = "id") Long id) {
-        taskRepository.deleteById(id);
+    // Get task by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+        Task task = taskService.getTaskById(id);
+        if (task != null) {
+            return new ResponseEntity<>(task, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

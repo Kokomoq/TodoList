@@ -1,16 +1,29 @@
 <!DOCTYPE html>
-<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Registration</title>
+  <title>Register</title>
+  <script defer src="/js/scripts.js" th:src="@{/js/scripts.js}"></script>
+  <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
 </head>
 <body>
-  <h2>Registration Form</h2>
+<div class="container">
+  <h1>Rejestracja</h1>
   <form th:action="@{/register}" th:object="${user}" method="post">
-    <label>Email: <input type="email" th:field="*{email}" required/></label><br/>
-    <label>Password: <input type="password" th:field="*{password}" required/></label><br/>
-    <input type="submit" value="Register"/>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" th:field="*{email}" required>
+    </div>
+    <div>
+      <label for="password">Hasło:</label>
+      <input type="password" id="password" th:field="*{password}" required>
+    </div>
+    <div>
+      <button type="submit">Zarejestruj się</button>
+    </div>
   </form>
+  <p>Masz już konto? <a th:href="@{/login}">Zaloguj się</a></p>
+</div>
 </body>
-<html/>
+</html>
 

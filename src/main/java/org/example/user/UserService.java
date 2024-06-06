@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,16 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+}
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
@@ -21,15 +32,9 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid username or password");
         }
         return org.springframework.security.core.userdetails.User
-                .withUsername(email)
+                .withUsername(user.getEmail())
                 .password(user.getPassword())
                 .roles("USER")
                 .build();
-     }
-    public void saveUser(User user) {
-        userRepository.save(user);
     }
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-}
 }

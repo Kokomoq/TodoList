@@ -22,7 +22,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user) {
+    public String registerUser(@ModelAttribute User user) {
         userService.saveUser(user);
         return "redirect:/login";
     }

@@ -2,163 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
-    <style>
-        /* Styl dla całego ciała strony */
-        body {
-            font-family: Arial, sans-serif; /* Ustawienie czcionki */
-            background-color: #f4f4f4; /* Kolor tła */
-            margin: 0; /* Usunięcie marginesów */
-            padding: 0; /* Usunięcie paddingu */
-            display: flex; /* Ustawienie flexboxa */
-            justify-content: center; /* Wyśrodkowanie w poziomie */
-            align-items: center; /* Wyśrodkowanie w pionie */
-            height: 100vh; /* Wysokość równa 100% widoku */
-        }
-
-        /* Kontener dla całej zawartości */
-        .container {
-            width: 400px; /* Szerokość kontenera */
-            background-color: #fff; /* Kolor tła */
-            border-radius: 8px; /* Zaokrąglenie narożników */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Cień */
-            padding: 20px; /* Wewnętrzny padding */
-        }
-
-        /* Nagłówek */
-        h1 {
-            text-align: center; /* Wyśrodkowanie tekstu */
-        }
-
-        /* Pole tekstowe */
-        input[type="text"] {
-            width: calc(100% - 80px); /* Szerokość równa 100% minus szerokość przycisku */
-            padding: 10px; /* Wewnętrzny padding */
-            margin-bottom: 10px; /* Margines od dołu */
-            border: 1px solid #ccc; /* Ramka */
-            border-radius: 4px; /* Zaokrąglenie narożników */
-            font-size: 16px; /* Rozmiar czcionki */
-        }
-
-        /* Przycisk */
-        button {
-            width: 80px; /* Szerokość przycisku */
-            padding: 10px; /* Wewnętrzny padding */
-            border: none; /* Brak ramki */
-            background-color: #007bff; /* Kolor tła */
-            color: #fff; /* Kolor tekstu */
-            border-radius: 4px; /* Zaokrąglenie narożników */
-            font-size: 16px; /* Rozmiar czcionki */
-            cursor: pointer; /* Zmiana kursora na wskaźnik */
-        }
-
-        /* Efekt hover dla przycisku */
-        button:hover {
-            background-color: #0056b3; /* Zmiana koloru tła po najechaniu kursorem */
-        }
-
-        /* Lista zadań */
-        ul {
-            list-style: none; /* Usunięcie domyślnego stylu listy */
-            padding: 0; /* Usunięcie wewnętrznego paddingu */
-        }
-
-        /* Pozycja na liście */
-        li {
-            background-color: #f9f9f9; /* Kolor tła */
-            padding: 10px; /* Wewnętrzny padding */
-            margin-bottom: 5px; /* Margines od dołu */
-            border-radius: 4px; /* Zaokrąglenie narożników */
-            display: flex; /* Ustawienie flexboxa */
-            justify-content: space-between; /* Rozłożenie elementów w poziomie */
-            align-items: center; /* Wyśrodkowanie w pionie */
-        }
-
-        /* Przycisk usuwania */
-        .delete-button {
-            background-color: #dc3545; /* Kolor tła */
-            color: #fff; /* Kolor tekstu */
-            border: none; /* Brak ramki */
-            padding: 8px 16px; /* Wewnętrzny padding */
-            border-radius: 4px; /* Zaokrąglenie narożników */
-            cursor: pointer; /* Zmiana kursora na wskaźnik */
-        }
-
-        /* Efekt hover dla przycisku usuwania */
-        .delete-button:hover {
-            background-color: #c82333; /* Zmiana koloru tła po najechaniu kursorem */
-        }
-    </style>
+    <script defer src="/js/scripts.js" th:src="@{/js/scripts.js}"></script>
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
 </head>
 <body>
-
 <div class="container">
-    <!-- Nagłówek -->
-    <h1>Todo List</h1>
-    <!-- Pole tekstowe do wprowadzania nowego zadania -->
-    <input type="text" id="taskInput" placeholder="Wprowadź zadanie">
-    <!-- Przycisk do dodawania nowego zadania -->
-    <button onclick="addTask()">Dodaj</button>
-    <!-- Lista zadań -->
-    <ul id="taskList"></ul>
+    <h1>Witamy w aplikacji Todo List</h1>
+    <p class="description">Zarządzaj swoimi zadaniami łatwo i skutecznie dzięki naszej aplikacji Todo List. Dodawaj, edytuj i usuwaj zadania, aby zawsze być na bieżąco ze swoimi obowiązkami.</p>
+    <button onclick="window.location.href='/login'">Zaloguj się</button>
+    <button onclick="window.location.href='/register'">Zarejestruj się</button>
 </div>
-<a th:href="@{/login}">
-    <button>Login</button>
-</a>
-<!-- Skrypt JavaScript -->
-<script>
-        function fetchTasks() {
-            // Pobierz listę zadań z serwera
-            fetch('/api/tasks')
-                .then(response => response.json()) // Przekonwertuj odpowiedź na JSON
-                .then(tasks => {
-                    const taskList = document.getElementById('taskList');
-                    taskList.innerHTML = ''; // Wyczyść listę zadań
-                    // Iteruj przez wszystkie zadania i dodaj je do listy
-                    tasks.forEach(task => {
-                        const li = document.createElement('li'); // Utwórz nowy element listy
-                        li.textContent = task.description; // Ustaw tekst zadania
-                        // Utwórz przycisk usuwania zadania
-                        const button = document.createElement('button');
-                        button.textContent = 'Usuń';
-                        button.className = 'delete-button'; // Dodaj klasę CSS
-                        button.onclick = () => deleteTask(task.id); // Dodaj obsługę kliknięcia
-                        li.appendChild(button); // Dodaj przycisk do elementu listy
-                        taskList.appendChild(li); // Dodaj element listy do listy zadań
-                    });
-                });
-        }
-
-        function addTask() {
-            const taskInput = document.getElementById('taskInput'); // Pobierz pole tekstowe
-            const description = taskInput.value; // Pobierz wartość pola tekstowego
-            if (description.trim() === '') { // Sprawdź, czy pole tekstowe jest puste
-                alert('Wprowadź zadanie'); // Wyświetl alert, jeśli pole tekstowe jest puste
-                return; // Zakończ funkcję
-            }
-            // Wyślij żądanie POST do serwera, aby dodać nowe zadanie
-            fetch('/api/tasks', {
-                method: 'POST', // Ustaw metodę żądania na POST
-                headers: {
-                    'Content-Type': 'application/json' // Ustaw nagłówek Content-Type na application/json
-                },
-                body: JSON.stringify(description) // Przekonwertuj opis na format JSON i ustaw jako ciało żądania
-            })
-            .then(() => {
-                taskInput.value = ''; // Wyczyść pole tekstowe po dodaniu zadania
-                fetchTasks(); // Pobierz zaktualizowaną listę zadań
-            });
-        }
-
-        function deleteTask(id) {
-            // Wyślij żądanie DELETE do serwera, aby usunąć zadanie
-            fetch(`/api/tasks/${id}`, {
-                method: 'DELETE' // Ustaw metodę żądania na DELETE
-            })
-            .then(fetchTasks); // Pobierz zaktualizowaną listę zadań po usunięciu zadania
-        }
-
-        fetchTasks(); // Pobierz listę zadań po załadowaniu strony
-    </script>
 </body>
 </html>
