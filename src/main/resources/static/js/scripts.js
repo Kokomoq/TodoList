@@ -1,5 +1,4 @@
-// scripts.js
-
+// Pobieranie zadań z serwera i wyświetlanie na stronie
 function fetchTasks() {
     fetch('/api/tasks')
         .then(response => response.json())
@@ -12,15 +11,19 @@ function fetchTasks() {
                 const button = document.createElement('button');
                 button.textContent = 'Usuń';
                 button.className = 'delete-button';
-                button.onclick = () => deleteTask(task.id);
+                button.setAttribute('data-task-id', task.id); // Ustawienie atrybutu data-task-id z id zadania
+                button.onclick = () => deleteTask(task.id); // Wywołanie funkcji deleteTask z id zadania
                 li.appendChild(button);
                 taskList.appendChild(li);
             });
-        });
+        })
+        .catch(error => console.error('Błąd podczas pobierania zadań:', error));
 }
 
-function addTask() {
-    const taskInput = document.getElementById('taskInput');
+// Dodawanie nowego zadania
+function addTask(event) {
+    event.preventDefault();
+    const taskInput = document.getElementById('taskDescription');
     const description = taskInput.value;
     if (description.trim() === '') {
         alert('Wprowadź zadanie');
@@ -33,17 +36,39 @@ function addTask() {
         },
         body: JSON.stringify({ description })
     })
-    .then(() => {
-        taskInput.value = '';
-        fetchTasks();
-    });
+    .then(response => {
+        if (response.ok) {
+            taskInput.value = '';
+            fetchTasks();
+        } else {
+            response.text().then(text => {
+                console.error('Błąd podczas dodawania zadania:', text);
+            });
+        }
+    })
+    .catch(error => console.error('Błąd podczas dodawania zadania:', error));
 }
 
+// Usuwanie zadania
 function deleteTask(id) {
     fetch(`/api/tasks/${id}`, {
         method: 'DELETE'
     })
-    .then(fetchTasks);
+    .then(response => {
+        if (response.ok) {
+            fetchTasks();
+        } else {
+            response.text().then(text => {
+                console.error('Błąd podczas usuwania zadania:', text);
+            });
+        }
+    })
+    .catch(error => console.error('Błąd podczas usuwania zadania:', error));
 }
 
-fetchTasks();
+// Inicjalizacja strony
+document.addEventListener('DOMContentLoaded', () => {
+    fetchTasks();
+    const taskForm = document.getElementById('taskForm');
+    taskForm.onsubmit = addTask;
+});
