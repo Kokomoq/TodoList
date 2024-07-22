@@ -30,7 +30,7 @@ public class TaskService {
         return taskRepository.findByIdAndUser(id, user);
     }
 
-    public void deleteTaskByIdAndUser(Long id, User user) {
+    public void deleteTask(Long id, User user) {
         Optional<Task> taskOptional = taskRepository.findByIdAndUser(id, user);
         if (taskOptional.isPresent()) {
             taskRepository.delete(taskOptional.get());

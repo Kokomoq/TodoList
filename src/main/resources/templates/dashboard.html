@@ -8,6 +8,11 @@
   <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
 </head>
 <body>
+<header>
+  <div class="top-right-button">
+    <a href="/logout" th:href="@{/logout}">Wyloguj</a>
+  </div>
+</header>
 <div class="task-container">
   <form id="taskForm" action="/api/tasks" method="post">
     <div class="form-group">

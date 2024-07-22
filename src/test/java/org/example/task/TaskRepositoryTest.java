@@ -1,83 +1,78 @@
 package org.example.task;
 
-import org.example.Main;
-import org.example.task.Task;
-import org.example.task.TaskRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.example.user.User;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+@RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes = Main.class)
-@ActiveProfiles("test")
 public class TaskRepositoryTest {
 
     @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
     private TaskRepository taskRepository;
-    @BeforeEach
+
+    private User user;
+    private Task task1;
+    private Task task2;
+    @Before
     public void setUp() {
-        taskRepository.deleteAll();
-    }
-    @Test
-    public void shouldSaveTask() {
-        Task task = new Task();
-        task.setDescription("Test Task");
-        Task savedTask = taskRepository.save(task);
+        user = new User();
+        user.setUsername("testuser");
+        entityManager.persist(user);
 
-        assertNotNull(savedTask.getId());
-        assertEquals("Test Task", task.getDescription());
-    }
-    @Test
-    public void shouldFindById() {
-        Task task = new Task();
-        task.setDescription("Test Task");
-        Task savedTask = taskRepository.save(task);
-
-        Optional<Task> retrievedTask = taskRepository.findById(savedTask.getId());
-        assertTrue(retrievedTask.isPresent());
-        assertEquals("Test Task", retrievedTask.get().getDescription());
-    }
-    @Test
-    public void shouldFindAll() {
-        Task task1 = new Task();
-        task1.setDescription("Test Task");
-
-        Task task2 = new Task();
-        task1.setDescription("Test Task");
-
-        taskRepository.save(task1);
-        taskRepository.save(task2);
-
-        List<Task> taskList = taskRepository.findAll();
-        assertThat(taskList).hasSize(2);
-        assertThat(taskList).contains(task1, task2);
-}
-    @Test
-    public void shouldDeleteById() {
-        Task task1 = new Task();
+        task1 = new Task();
         task1.setDescription("Task 1");
+        task1.setUser(user);
+        entityManager.persist(task1);
 
-        Task task2 = new Task();
+        task2 = new Task();
         task2.setDescription("Task 2");
+        task2.setUser(user);
+        entityManager.persist(task2);
 
-        taskRepository.save(task1);
-        taskRepository.save(task2);
+        entityManager.flush();
+    }
+    @Test
+    public void shouldReturnTaskByIdAndUser() {
+        Optional<Task> found = taskRepository.findByIdAndUser(task1.getId(), user);
 
-        Long id1 = task1.getId();
-        taskRepository.deleteById(id1);
-
-        List<Task> taskList = taskRepository.findAll();
-        assertThat(taskList).hasSize(1);
-        assertThat(taskList).doesNotContain(task1);
-        assertThat(taskList).contains(task2);
+        assertTrue(found.isPresent());
+        assertEquals(task1.getDescription(), found.get().getDescription());
     }
 
+    @Test
+    public void shouldReturnTasksByUser() {
+        List<Task> foundTasks = taskRepository.findByUser(user);
+
+        assertEquals(2, foundTasks.size());
+        assertTrue(foundTasks.contains(task1));
+        assertTrue(foundTasks.contains(task2));
+    }
+
+    @Test
+    public void shouldReturnEmptyWhenFindByIdAndUserWithWrongId() {
+        Optional<Task> found = taskRepository.findByIdAndUser(999L, user);
+        assertFalse(found.isPresent());
+    }
+
+    @Test
+    public void shouldReturnEmptyListWhenFindUserWithNoTasks() {
+        User newUser = new User();
+        newUser.setUsername("newuser");
+        entityManager.persist(newUser);
+        List<Task> found = taskRepository.findByUser(newUser);
+
+        assertTrue(found.isEmpty());
+    }
 }
