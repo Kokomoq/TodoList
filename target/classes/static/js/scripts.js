@@ -7,18 +7,35 @@ function fetchTasks() {
             taskList.innerHTML = '';
             tasks.forEach(task => {
                 const li = document.createElement('li');
-                li.textContent = task.description;
-                const button = document.createElement('button');
-                button.textContent = 'Usuń';
-                button.className = 'delete-button';
-                button.setAttribute('data-task-id', task.id); // Ustawienie atrybutu data-task-id z id zadania
-                button.onclick = () => deleteTask(task.id); // Wywołanie funkcji deleteTask z id zadania
-                li.appendChild(button);
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.setAttribute('data-task-id', task.id);
+
+                const taskDesc = document.createElement('span');
+                taskDesc.className = 'task-desc';
+                taskDesc.textContent = task.description;
+
+                const div = document.createElement('div');
+
+                const editButton = document.createElement('button');
+                editButton.className = 'btn btn-link text-primary edit-btn';
+                editButton.innerHTML = '<i class="fas fa-edit"></i>';
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn-link text-danger delete-btn';
+                deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteButton.setAttribute('data-task-id', task.id);
+                deleteButton.onclick = () => deleteTask(task.id);
+
+                div.appendChild(editButton);
+                div.appendChild(deleteButton);
+                li.appendChild(taskDesc);
+                li.appendChild(div);
                 taskList.appendChild(li);
             });
         })
         .catch(error => console.error('Błąd podczas pobierania zadań:', error));
 }
+
 
 // Dodawanie nowego zadania
 function addTask(event) {
@@ -71,4 +88,63 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchTasks();
     const taskForm = document.getElementById('taskForm');
     taskForm.onsubmit = addTask;
+});
+
+// Aktualizacja zadania
+function updateTask(id, description) {
+    return fetch(`/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text); });
+        }
+        return response.json();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    fetchTasks();
+
+    const taskForm = document.getElementById('taskForm');
+    taskForm.onsubmit = addTask;
+
+    const taskList = document.getElementById('taskList');
+    const editTaskModal = $('#editTaskModal');
+    const editTaskForm = document.getElementById('editTaskForm');
+    let currentTaskDescElem = null;
+    let currentTaskId = null;
+
+    taskList.addEventListener('click', function (e) {
+        if (e.target.classList.contains('edit-btn') || e.target.parentElement.classList.contains('edit-btn')) {
+            const taskItem = e.target.closest('.list-group-item');
+            const taskDescElem = taskItem.querySelector('.task-desc');
+            const taskDesc = taskDescElem.textContent.trim();
+
+            currentTaskDescElem = taskDescElem;
+            currentTaskId = taskItem.dataset.taskId;
+            editTaskForm.editTaskDescription.value = taskDesc;
+            editTaskModal.modal('show');
+        }
+    });
+
+    editTaskForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newDesc = editTaskForm.editTaskDescription.value.trim();
+        if (newDesc) {
+            updateTask(currentTaskId, newDesc)
+                .then(updatedTask => {
+                    currentTaskDescElem.textContent = updatedTask.description;
+                    editTaskModal.modal('hide');
+                })
+                .catch(error => {
+                    console.error('Błąd podczas aktualizacji zadania:', error);
+                    alert('Nie udało się zaktualizować zadania.');
+                });
+        }
+    });
 });

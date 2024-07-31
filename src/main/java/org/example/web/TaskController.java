@@ -114,4 +114,9 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
+        Task task = taskService.updateTask(id, updatedTask);
+        return new ResponseEntity<>(task, HttpStatus.OK);
+    }
 }

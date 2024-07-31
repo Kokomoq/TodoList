@@ -1,6 +1,8 @@
 package org.example.task;
 
+import org.example.security.CustomUserDetails;
 import org.example.user.User;
+import org.example.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ public class TaskService {
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
+    @Autowired
+    private UserService userService;
 
     public List<Task> getAllTasks(User user) {
         return taskRepository.findByUser(user);
@@ -37,5 +41,13 @@ public class TaskService {
         } else {
             throw new IllegalArgumentException("Task not found or not authorized");
         }
+    }
+
+    public Task updateTask(Long id, Task updatedTask) {
+        User currentUser = userService.getCurrentUser();
+        Task existingTask = taskRepository.findByIdAndUser(id, currentUser).orElseThrow(() -> new TaskNotFoundException(id));
+        existingTask.setDescription(updatedTask.getDescription());
+
+        return taskRepository.save(existingTask);
     }
 }
