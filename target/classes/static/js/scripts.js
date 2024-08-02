@@ -1,8 +1,17 @@
 // Pobieranie zadań z serwera i wyświetlanie na stronie
 function fetchTasks() {
-    fetch('/api/tasks')
+    const filterDescription = document.getElementById('filterDescription').value;
+    const sortOrder = document.getElementById('sortOrder').value;
+
+    const queryParams = new URLSearchParams({
+        description: filterDescription,
+        sort: sortOrder,
+    });
+
+    fetch(`/api/tasks?${queryParams.toString()}`)
         .then(response => response.json())
-        .then(tasks => {
+        .then(page => {
+            const tasks = page.content; // Pobranie właściwej tablicy zadań
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = '';
             tasks.forEach(task => {
@@ -35,7 +44,6 @@ function fetchTasks() {
         })
         .catch(error => console.error('Błąd podczas pobierania zadań:', error));
 }
-
 
 // Dodawanie nowego zadania
 function addTask(event) {
@@ -83,13 +91,6 @@ function deleteTask(id) {
     .catch(error => console.error('Błąd podczas usuwania zadania:', error));
 }
 
-// Inicjalizacja strony
-document.addEventListener('DOMContentLoaded', () => {
-    fetchTasks();
-    const taskForm = document.getElementById('taskForm');
-    taskForm.onsubmit = addTask;
-});
-
 // Aktualizacja zadania
 function updateTask(id, description) {
     return fetch(`/api/tasks/${id}`, {
@@ -107,11 +108,18 @@ function updateTask(id, description) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+// Inicjalizacja strony
+document.addEventListener('DOMContentLoaded', () => {
     fetchTasks();
 
     const taskForm = document.getElementById('taskForm');
     taskForm.onsubmit = addTask;
+
+    const filterForm = document.getElementById('filterForm');
+    filterForm.onsubmit = (event) => {
+        event.preventDefault();
+        fetchTasks();
+    };
 
     const taskList = document.getElementById('taskList');
     const editTaskModal = $('#editTaskModal');

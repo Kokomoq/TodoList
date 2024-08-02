@@ -4,8 +4,14 @@ import org.example.security.CustomUserDetails;
 import org.example.user.User;
 import org.example.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +24,9 @@ public class TaskService {
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
+
     @Autowired
     private UserService userService;
-
-    public List<Task> getAllTasks(User user) {
-        return taskRepository.findByUser(user);
-    }
 
     public Task saveTask(Task task, User user) {
         task.setUser(user);
@@ -49,5 +52,29 @@ public class TaskService {
         existingTask.setDescription(updatedTask.getDescription());
 
         return taskRepository.save(existingTask);
+    }
+
+    public Page<Task> getTasks(String description, int page, int size, String sort) {
+        User currentUser = userService.getCurrentUser();
+
+        // Walidacja i konstrukcja sortowania
+        List<Sort.Order> orders = new ArrayList<>();
+        String[] sortParams = sort.split(",");
+        for (int i = 0; i < sortParams.length; i += 2) {
+            String field = sortParams[i];
+            String direction = i + 1 < sortParams.length ? sortParams[i + 1] : "asc";
+            if (!direction.equalsIgnoreCase("asc") && !direction.equalsIgnoreCase("desc")) {
+                throw new IllegalArgumentException("Invalid sort direction: " + direction);
+            }
+            orders.add(new Sort.Order(Sort.Direction.fromString(direction), field));
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
+
+        if (description != null && !description.isEmpty()) {
+            return taskRepository.findByUserAndDescriptionContaining(currentUser, description, pageable);
+        } else {
+            return taskRepository.findByUser(currentUser, pageable);
+        }
     }
 }

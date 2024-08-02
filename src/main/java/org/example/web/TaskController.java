@@ -6,6 +6,7 @@ import org.example.task.TaskService;
 import org.example.user.User;
 import org.example.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -81,19 +82,14 @@ public class TaskController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(produces = "application/json")
-    public ResponseEntity<List<Task>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        User user = userRepository.findByUsername(userDetails.getUsername());
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        List<Task> tasks = taskService.getAllTasks(user);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    @GetMapping
+    public Page<Task> getTasks(
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "id,desc") String sort
+    ) {
+        return taskService.getTasks(description, page, size, sort);
     }
 
     @GetMapping("/{id}")
