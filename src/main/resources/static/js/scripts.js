@@ -1,17 +1,24 @@
-// Pobieranie zadań z serwera i wyświetlanie na stronie
-function fetchTasks() {
+let currentPage = 0; // Numer bieżącej strony
+const pageSize = 10; // Rozmiar strony
+
+function fetchTasks(page = 0) {
+    currentPage = page; // Zaktualizuj bieżącą stronę
     const filterDescription = document.getElementById('filterDescription').value;
     const sortOrder = document.getElementById('sortOrder').value;
 
     const queryParams = new URLSearchParams({
         description: filterDescription,
+        page: currentPage,
+        size: pageSize,
         sort: sortOrder,
     });
 
     fetch(`/api/tasks?${queryParams.toString()}`)
         .then(response => response.json())
-        .then(page => {
-            const tasks = page.content; // Pobranie właściwej tablicy zadań
+        .then(pageData => {
+            const tasks = pageData.content; // Pobranie właściwej tablicy zadań
+            const totalPages = pageData.totalPages; // Pobranie liczby stron
+
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = '';
             tasks.forEach(task => {
@@ -41,6 +48,10 @@ function fetchTasks() {
                 li.appendChild(div);
                 taskList.appendChild(li);
             });
+
+            // Zaktualizuj widoczność przycisków nawigacyjnych
+            document.getElementById('prevPage').style.display = currentPage > 0 ? 'block' : 'none';
+            document.getElementById('nextPage').style.display = currentPage < totalPages - 1 ? 'block' : 'none';
         })
         .catch(error => console.error('Błąd podczas pobierania zadań:', error));
 }
@@ -64,7 +75,7 @@ function addTask(event) {
     .then(response => {
         if (response.ok) {
             taskInput.value = '';
-            fetchTasks();
+            fetchTasks(currentPage); // Pobierz aktualną stronę po dodaniu zadania
         } else {
             response.text().then(text => {
                 console.error('Błąd podczas dodawania zadania:', text);
@@ -81,7 +92,7 @@ function deleteTask(id) {
     })
     .then(response => {
         if (response.ok) {
-            fetchTasks();
+            fetchTasks(currentPage); // Pobierz aktualną stronę po usunięciu zadania
         } else {
             response.text().then(text => {
                 console.error('Błąd podczas usuwania zadania:', text);
@@ -110,7 +121,7 @@ function updateTask(id, description) {
 
 // Inicjalizacja strony
 document.addEventListener('DOMContentLoaded', () => {
-    fetchTasks();
+    fetchTasks(); // Pobierz pierwszą stronę zadań
 
     const taskForm = document.getElementById('taskForm');
     taskForm.onsubmit = addTask;
@@ -118,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterForm = document.getElementById('filterForm');
     filterForm.onsubmit = (event) => {
         event.preventDefault();
-        fetchTasks();
+        fetchTasks(); // Przeładuj z filtrem
     };
 
     const taskList = document.getElementById('taskList');
@@ -155,4 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     });
+
+    // Obsługuje przyciski nawigacji
+    document.getElementById('prevPage').onclick = () => fetchTasks(currentPage - 1);
+    document.getElementById('nextPage').onclick = () => fetchTasks(currentPage + 1);
 });

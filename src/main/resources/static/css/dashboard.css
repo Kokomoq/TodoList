@@ -1,30 +1,27 @@
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f0f2f5;
-  margin: 0;
-}
-
-header {
-  position: fixed;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  background-color: transparent; /* Remove background color */
-  padding: 10px; /* Adjust padding */
-}
-
-.container {
-  margin-top: 80px; /* Adjust this value to be equal to or greater than the header height */
-}
-
-.task-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #ffffff;
-}
+ body {
+       padding-top: 70px; /* Dostosuj do wysokości nagłówka */
+     }
+     header {
+       position: fixed;
+       width: 100%;
+       top: 0;
+       left: 0;
+       z-index: 1000;
+       background-color: transparent; /* Zmiana tła na przezroczyste */
+       border-bottom: none; /* Usuń dolną krawędź */
+       box-shadow: none; /* Usuń box-shadow */
+     }
+     .task-container {
+       max-height: 80vh; /* Dostosuj w razie potrzeby */
+       overflow-y: auto;
+     }
+     .task-header {
+       position: sticky;
+       top: 0;
+       background-color: white;
+       z-index: 10;
+       padding-top: 1rem;
+     }
 
 .task-container h1 {
   color: #333;
@@ -77,3 +74,5 @@ header {
   border-radius: 20px;
   padding: 10px 20px;
 }
+
+
