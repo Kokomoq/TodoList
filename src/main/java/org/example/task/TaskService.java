@@ -1,6 +1,5 @@
 package org.example.task;
 
-import org.example.security.CustomUserDetails;
 import org.example.user.User;
 import org.example.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,14 +17,14 @@ import java.util.Optional;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserService userService;
+
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
+        this.userService = userService;
     }
-
-    @Autowired
-    private UserService userService;
 
     public Task saveTask(Task task, User user) {
         task.setUser(user);

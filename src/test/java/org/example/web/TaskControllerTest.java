@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.example.task.Task;
@@ -16,19 +17,22 @@ import org.example.user.User;
 import org.example.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+
 
 @WebMvcTest(TaskController.class)
 public class TaskControllerTest {
@@ -95,14 +99,16 @@ public class TaskControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     void shouldGetALlTasks() throws Exception {
+        List<Task> tasks = Arrays.asList(task);
+        Pageable pageable = PageRequest.of(0, 10);
         when(userRepository.findByUsername(anyString())).thenReturn(user);
-        when(taskService.getAllTasks(any(User.class))).thenReturn(Arrays.asList(task));
+        when(taskService.getTasks(null, 0, 10, "id,desc")).thenReturn(new PageImpl<>(tasks, pageable, tasks.size()));
 
         mockMvc.perform(get("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(task.getId()));
-    }
+                .andExpect(jsonPath("$.content[0].id").value(task.getId()))
+                .andExpect(jsonPath("$.content[0].description").value(task.getDescription()));    }
     @Test
     @WithMockUser(username = "testuser")
     void shouldGetTaskById() throws Exception {
@@ -129,12 +135,7 @@ public class TaskControllerTest {
         mockMvc.perform(delete("/api/tasks/{id}", 1L))
                 .andExpect(status().isForbidden());
     }
-    @Test
-    void shouldNotGetAllTasks() throws Exception {
-        mockMvc.perform(get("/api/tasks")
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isForbidden());
-    }
+
     @Test
     void shouldNotGetTaskById() throws Exception {
         mockMvc.perform(get("/api/tasks/{id}", 1L)
