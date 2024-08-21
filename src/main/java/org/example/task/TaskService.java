@@ -28,6 +28,9 @@ public class TaskService {
 
     public Task saveTask(Task task, User user) {
         task.setUser(user);
+        if(task.getPriority() == null) {
+            task.setPriority(Priority.LOW);
+        }
         return taskRepository.save(task);
     }
 
@@ -48,7 +51,7 @@ public class TaskService {
         User currentUser = userService.getCurrentUser();
         Task existingTask = taskRepository.findByIdAndUser(id, currentUser).orElseThrow(() -> new TaskNotFoundException(id));
         existingTask.setDescription(updatedTask.getDescription());
-
+        existingTask.setPriority(updatedTask.getPriority());
         return taskRepository.save(existingTask);
     }
 

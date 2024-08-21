@@ -13,6 +13,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -33,10 +36,20 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
     public User getUser() {
         return user;
     }
     public void setUser(User user) {
         this.user = user;
     }
+
 }

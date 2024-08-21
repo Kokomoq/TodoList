@@ -33,7 +33,6 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                 .csrf((csrf) -> csrf.disable());
         return http.build();
 

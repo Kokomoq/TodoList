@@ -74,5 +74,42 @@
   border-radius: 20px;
   padding: 10px 20px;
 }
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-desc {
+    flex-grow: 1; /* Opis zadania wypełnia dostępną przestrzeń */
+    text-align: left; /* Wyrównanie do lewej */
+}
+
+.buttons-container {
+    margin-right: 10px; /* Odstęp między przyciskami a priorytetem */
+}
+
+.priority-badge {
+    font-weight: bold;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 5px;
+    margin-left: auto; /* Priorytet na prawo */
+}
+
+.priority-low {
+    background-color: #28a745; /* Zielony dla niskiego priorytetu */
+}
+
+.priority-medium {
+    background-color: #ffc107; /* Żółty dla średniego priorytetu */
+}
+
+.priority-high {
+    background-color: #dc3545; /* Czerwony dla wysokiego priorytetu */
+}
+
+
+
 
 
