@@ -18,34 +18,84 @@
   <div class="task-container p-4 shadow-sm rounded bg-white">
     <h1 class="mb-4">Twoja lista zadań</h1>
 
-    <!-- Form filter -->
-    <form id="filterForm" class="mb-4">
-      <div class="form-group">
-        <input type="text" class="form-control" id="filterDescription" placeholder="Filter by description">
+    <!-- Sekcja Filtrowania i Sortowania -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Filtrowanie i Sortowanie</h5>
       </div>
-      <div class="form-group">
-        <select class="form-control" id="sortOrder">
-          <option value="id,asc">ID Ascending</option>
-          <option value="id,desc">ID Descending</option>
-          <option value="description,asc">Description Ascending</option>
-          <option value="description,desc">Description Descending</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Apply</button>
-    </form>
+      <div class="card-body">
+        <form id="filterSortForm">
+          <div class="row g-3 align-items-end">
+            <!-- Filtrowanie -->
+            <div class="col-md-4">
+              <label for="filterPriority" class="form-label">Filtruj według priorytetu</label>
+              <select class="form-select" id="filterPriority">
+                <option value="">Wszystkie</option>
+                <option value="LOW">Niski</option>
+                <option value="MEDIUM">Średni</option>
+                <option value="HIGH">Wysoki</option>
+              </select>
+            </div>
 
-    <form id="taskForm">
-      <input type="text" id="taskDescription" name="description" placeholder="Opis zadania">
-      <select id="taskPriority" name="priority">
-        <option value="LOW">Niski</option>
-        <option value="MEDIUM">Średni</option>
-        <option value="HIGH">Wysoki</option>
-      </select>
-      <button type="submit">Dodaj zadanie</button>
-    </form>
+            <!-- Sortowanie -->
+            <div class="col-md-4">
+              <label for="sortBy" class="form-label">Sortuj według</label>
+              <select class="form-select" id="sortBy">
+                <option value="priority">Priorytet</option>
+                <option value="description">Opis</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label for="sortOrder" class="form-label">Kolejność</label>
+              <select class="form-select" id="sortOrder">
+                <option value="asc">Rosnąco</option>
+                <option value="desc">Malejąco</option>
+              </select>
+            </div>
+
+            <!-- Przycisk zastosowania filtrów i sortowania -->
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-secondary w-100">Zastosuj</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- Sekcja Dodawania Zadania -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Dodaj nowe zadanie</h5>
+      </div>
+      <div class="card-body">
+        <form id="addTaskForm">
+          <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+              <label for="taskDescription" class="form-label">Opis zadania</label>
+              <input type="text" class="form-control" id="taskDescription" placeholder="Wprowadź opis zadania" required>
+            </div>
+            <div class="col-md-4">
+              <label for="taskPriority" class="form-label">Priorytet</label>
+              <select class="form-select" id="taskPriority" required>
+                <option value="" selected disabled>Wybierz priorytet</option>
+                <option value="LOW">Niski</option>
+                <option value="MEDIUM">Średni</option>
+                <option value="HIGH">Wysoki</option>
+              </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">Dodaj</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
 
     <div class="task-list">
-      <ul id="taskList" class="list-group">
+      <ul id="task-list" class="list-group">
         <!-- Lista zadań zostanie wygenerowana dynamicznie przez JavaScript -->
       </ul>
     </div>

@@ -108,6 +108,26 @@
 .priority-high {
     background-color: #dc3545; /* Czerwony dla wysokiego priorytetu */
 }
+/* Stylizacja sekcji dodawania zadań */
+#addTaskForm .form-control,
+#addTaskForm .form-select {
+    box-shadow: none;
+    border-radius: 0.25rem;
+}
+
+#addTaskForm .btn-primary {
+    border-radius: 0.25rem;
+}
+/* Stylizacja sekcji filtrowania i sortowania */
+#filterSortForm .form-select {
+    box-shadow: none;
+    border-radius: 0.25rem;
+}
+
+#filterSortForm .btn-secondary {
+    border-radius: 0.25rem;
+}
+
 
 
 
